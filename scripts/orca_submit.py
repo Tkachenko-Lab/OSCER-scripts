@@ -27,6 +27,7 @@ module load GCC/12.3.0 UCX/1.14.1-GCCcore-12.3.0 PMIx/4.2.4-GCCcore-12.3.0 libev
 export PATH=/home/nvt/Software/openmpi-4.1.8-noAVX/openmpi-4.1.8/install/bin:$PATH
 export LD_LIBRARY_PATH=/home/nvt/Software/openmpi-4.1.8-noAVX/openmpi-4.1.8/install/lib:$LD_LIBRARY_PATH
 export ORCA_PATH=/home/nvt/Software/ORCA_6_1_no_AVX2
+export NBOEXE=/home/nvt/Software/NBO7/nbo7/bin/nbo7.i8.exe
 
 # (Optional) OpenMPI env
 export OMPI_MCA_btl=self,tcp
@@ -139,7 +140,7 @@ TO_COPY+=( "$INPUT" )
 
 echo "[INFO] staging inputs to $WORKDIR"
 for f in "${TO_COPY[@]}"; do
-  [[ -e "$f" ]] && rsync -a "$f" "$WORKDIR/"
+  [[ -e "$f" ]] && /usr/bin/rsync -a "$f" "$WORKDIR/"
 done
 """
         if args.clean == "standart":
@@ -156,7 +157,7 @@ if [[ -d "$WORKDIR" ]]; then
   rm -rf "$WORKDIR"
 fi"""
         cd_block = 'cd "$WORKDIR"'
-        copyback_block = 'echo "[INFO] copying results to $RESULTDIR"\nrsync -a "$WORKDIR"/ "$RESULTDIR"/'
+        copyback_block = 'echo "[INFO] copying results to $RESULTDIR"\n/usr/bin/rsync -a "$WORKDIR"/ "$RESULTDIR"/'
     elif args.workdir == "scratch":
         workdir_block = """# Use shared scratch
 WORKDIR="/scratch/${SLURM_JOB_ID}"
@@ -168,7 +169,7 @@ TO_COPY+=( "$INPUT" )
 
 echo "[INFO] staging inputs to $WORKDIR"
 for f in "${TO_COPY[@]}"; do
-  [[ -e "$f" ]] && rsync -a "$f" "$WORKDIR/"
+  [[ -e "$f" ]] && /usr/bin/rsync -a "$f" "$WORKDIR/"
 done
 """
         if args.clean == "standart":
@@ -185,7 +186,7 @@ if [[ -d "$WORKDIR" ]]; then
   rm -rf "$WORKDIR"
 fi"""
         cd_block = 'cd "$WORKDIR"'
-        copyback_block = 'echo "[INFO] copying results to $RESULTDIR"\nrsync -a "$WORKDIR"/ "$RESULTDIR"/'
+        copyback_block = 'echo "[INFO] copying results to $RESULTDIR"\n/usr/bin/rsync -a "$WORKDIR"/ "$RESULTDIR"/'
     elif args.workdir == "pwd":
         workdir_block = """# Use current directory (no staging)
 WORKDIR="$PWD"
